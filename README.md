@@ -1,4 +1,4 @@
-<p align="center">
+<p align="left">
   <img src="public/icon-192.png" width="80" alt="Tap Colors" />
 </p>
 
