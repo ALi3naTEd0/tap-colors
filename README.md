@@ -1,4 +1,8 @@
-# 🎨 Tap Colors
+<p align="center">
+  <img src="public/icon-192.png" width="80" alt="Tap Colors" />
+</p>
+
+# Tap Colors
 
 Juego de reflejos para niños diseñado para móvil y desktop. Círculos de colores aparecen en pantalla y hay que tocarlos antes de que desaparezcan.
 
