@@ -11,6 +11,7 @@ Juego de reflejos para niños diseñado para móvil y desktop. Círculos de colo
 - **7 colores** con valores distintos: Rojo/Azul (+1), Amarillo/Verde (+2), Naranja/Morado (+3), Rosa (+5)
 - **Niveles infinitos** — cada nivel dura 60 segundos y escala en velocidad, tamaño y cantidad de círculos simultáneos
 - **Multiplicador por nivel** — los puntos valen más cuanto más alto el nivel
+- **5 tamaños de círculo** — Grande · Mediano · Pequeño · Hard · Pro (desde ×1.0 hasta ×0.15)
 - **Historial de partidas** guardado en `localStorage` (sin backend)
 - **PWA** — instalable en móvil desde el navegador
 - **Open Graph** — preview con imagen generada por `next/og`
@@ -31,11 +32,3 @@ npm run dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) en el navegador.
-
-## Despliegue
-
-```bash
-npm run build
-```
-
-Recomendado desplegar en [Vercel](https://vercel.com).

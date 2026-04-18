@@ -66,7 +66,11 @@ function getLevelConfig(level: number): LevelConfig {
 
 const GAME_SECS = 60
 const STORAGE_KEY = 'tap-colors-results'
+const SIZE_PREF_KEY = 'tap-colors-size'
 const EXPIRY_WARN_MS = 800 // show expiring state before removal
+
+const SIZE_MULTS = { large: 1.0, medium: 0.65, small: 0.45, hard: 0.28, pro: 0.15 } as const
+type SizeMode = keyof typeof SIZE_MULTS
 
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
@@ -114,6 +118,7 @@ export default function TapColorsGame() {
   const [lastResult, setLastResult] = useState<Result | null>(null)
   const [results, setResults]       = useState<Result[]>([])
   const [scoreBump, setScoreBump]   = useState(false)
+  const [sizeMode, setSizeMode]     = useState<SizeMode>('large')
 
   const gameAreaRef  = useRef<HTMLDivElement>(null)
   const scoreRef     = useRef(0)
@@ -122,8 +127,24 @@ export default function TapColorsGame() {
   const startRef     = useRef(0)
   const levelRef     = useRef(1)
   const screenRef    = useRef<Screen>('menu')
+  const sizeModeRef  = useRef<SizeMode>('large')
 
   useEffect(() => { levelRef.current = level }, [level])
+  useEffect(() => { sizeModeRef.current = sizeMode }, [sizeMode])
+
+  useEffect(() => {
+    const saved = localStorage.getItem(SIZE_PREF_KEY)
+    if (saved === 'large' || saved === 'medium' || saved === 'small' || saved === 'hard' || saved === 'pro') {
+      setSizeMode(saved)
+      sizeModeRef.current = saved
+    }
+  }, [])
+
+  const toggleSize = useCallback((mode: SizeMode) => {
+    setSizeMode(mode)
+    sizeModeRef.current = mode
+    localStorage.setItem(SIZE_PREF_KEY, mode)
+  }, [])
 
   const stopTimers = useCallback(() => {
     // timers stored in closure refs below; this just signals stop via screenRef
@@ -172,7 +193,8 @@ export default function TapColorsGame() {
       const area = gameAreaRef.current
       if (!area) return
       const { width, height } = area.getBoundingClientRect()
-      const half = cfg.size / 2 + 8
+      const circleSize = Math.round(cfg.size * SIZE_MULTS[sizeModeRef.current])
+      const half = circleSize / 2 + 8
 
       setCircles(prev => {
         const active = prev.filter(c => !c.popped && !c.expiring)
@@ -258,6 +280,7 @@ export default function TapColorsGame() {
   // ── Best score for current level ──
   const bestForLevel = results.filter(r => r.level === level).reduce((b, r) => Math.max(b, r.score), 0)
   const cfg = getLevelConfig(level)
+  const effectiveSize = Math.round(cfg.size * SIZE_MULTS[sizeMode])
 
   // ─── Screens ───────────────────────────────────────────────────────────────
 
@@ -275,6 +298,8 @@ export default function TapColorsGame() {
         results={results}
         bestForLevel={bestForLevel}
         onClearHistory={clearHistory}
+        sizeMode={sizeMode}
+        onSizeModeChange={toggleSize}
       />
     )
   }
@@ -308,7 +333,7 @@ export default function TapColorsGame() {
           <GameCircle
             key={c.id}
             circle={c}
-            size={cfg.size}
+            size={effectiveSize}
             pointMult={cfg.pointMult}
             onTap={tapCircle}
           />
@@ -431,7 +456,7 @@ function GameCircle({
 // ─── Menu Screen ─────────────────────────────────────────────────────────────
 
 function MenuScreen({
-  level, onLevelChange, onStart, results, bestForLevel, onClearHistory,
+  level, onLevelChange, onStart, results, bestForLevel, onClearHistory, sizeMode, onSizeModeChange,
 }: {
   level: number
   onLevelChange: (l: number) => void
@@ -439,6 +464,8 @@ function MenuScreen({
   results: Result[]
   bestForLevel: number
   onClearHistory: () => void
+  sizeMode: SizeMode
+  onSizeModeChange: (m: SizeMode) => void
 }) {
   const [confirmClear, setConfirmClear] = useState(false)
 
@@ -491,6 +518,26 @@ function MenuScreen({
             Mejor: <span className="text-indigo-400 font-black">{bestForLevel} pts</span>
           </span>
         )}
+      </div>
+
+      {/* Size toggle */}
+      <div className="flex flex-col items-center gap-2">
+        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tamaño</span>
+        <div className="flex bg-gray-100 rounded-full p-1 gap-1">
+          {([['large', 'Grande'], ['medium', 'Mediano'], ['small', 'Pequeño'], ['hard', 'Hard'], ['pro', 'Pro']] as [SizeMode, string][]).map(([mode, label]) => (
+            <button
+              key={mode}
+              onClick={() => onSizeModeChange(mode)}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                sizeMode === mode
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Play button */}
