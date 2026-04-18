@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="115" fill="#EEF2FF"/>
+  <!-- Glow layers -->
+  <circle cx="256" cy="185" r="105" fill="rgba(255,75,75,0.18)"/>
+  <circle cx="160" cy="345" r="88" fill="rgba(59,130,246,0.18)"/>
+  <circle cx="352" cy="345" r="88" fill="rgba(34,197,94,0.18)"/>
+  <!-- Main circles -->
+  <circle cx="256" cy="185" r="88" fill="#FF4B4B"/>
+  <circle cx="160" cy="345" r="72" fill="#3B82F6"/>
+  <circle cx="352" cy="345" r="72" fill="#22C55E"/>
+</svg>
